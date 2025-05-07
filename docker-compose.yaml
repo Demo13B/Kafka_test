@@ -10,18 +10,16 @@ services:
       - ./zookeeper-datalog:/datalog
 
   kafka:
-    image: confluentinc/cp-server:7.1.1-1-ubi8
+    image: confluentinc/cp-kafka
     environment:
       KAFKA_BROKER_ID: 101
-      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:2181"
+      KAFKA_ZOOKEEPER_CONNECT: "zookeeper:${ZOOKEEPER_PORT}"
       KAFKA_AUTO_CREATE_TOPICS_ENABLE: "true"
       KAFKA_DELETE_TOPIC_ENABLE: "true"
       KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1
-      #KAFKA_METRIC_REPORTERS: "io.confluent.metrics.reporter.ConfluentMetricsReporter"
-      #CONFLUENT_METRICS_REPORTER_BOOTSTRAP_SERVERS: "kafka-1:9092,kafka-2:9092,kafka-3:9092"
-      KAFKA_LISTENERS: PLAINTEXT://0.0.0.0:19092,SSL://0.0.0.0:19093,BROKER://0.0.0.0:9092
-      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://${SERVER_IP}:19092,SSL://${SERVER_IP}:19093,BROKER://kafka:9092
-      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: PLAINTEXT:PLAINTEXT,SSL:SSL,BROKER:PLAINTEXT
+      KAFKA_LISTENERS: SSL://0.0.0.0:9093,BROKER://kafka:9092
+      KAFKA_ADVERTISED_LISTENERS: SSL://${SERVER_IP}:${KAFKA_PORT},BROKER://kafka:9092
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: SSL:SSL,BROKER:PLAINTEXT
       KAFKA_INTER_BROKER_LISTENER_NAME: BROKER
       KAFKA_SSL_KEYSTORE_FILENAME: kafka.kafka-1.keystore.pkcs12
       KAFKA_SSL_KEYSTORE_CREDENTIALS: kafka-1_sslkey_creds
@@ -30,12 +28,12 @@ services:
       #KAFKA_SSL_TRUSTSTORE_CREDENTIALS: kafka-1_truststore_creds
       KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
       #KAFKA_SSL_CLIENT_AUTH: "required"
+      KAFKA_HEAP_OPTS: "-Xmx512M -Xms256M"
 
     ports:
-      - "19092:19092"
-      - "19093:19093"
+      - "${KAFKA_PORT}:9093"
     volumes:
-      - data-kafka-1:/var/lib/kafka/data
+      - ./kafka-data:/var/lib/kafka/data
       - ./creds:/etc/kafka/secrets
     depends_on:
       - zookeeper

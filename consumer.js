@@ -1,12 +1,19 @@
 const { Kafka } = require('kafkajs');
+const fs = require('fs');
 require('dotenv').config();
 
 startConsumer = async (topicName) => {
     try {
         const kafka = new Kafka({
-            'clientId': 'producer',
-            'brokers': [process.env.KAFKA_BROKER]
-        })
+            'clientId': 'topic_manager',
+            'brokers': [process.env.KAFKA_BROKER],
+            'ssl': {
+                'ca': [fs.readFileSync('./creds/ca.crt')],
+                'rejectUnauthorized': true,
+                'checkServerIdentity': () => undefined,
+                'passphrase': 'confluent'
+            }
+        });
 
         const consumer = kafka.consumer({ 'groupId': '1' });
 

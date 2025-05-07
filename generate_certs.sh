@@ -1,35 +1,49 @@
-# Generating CA
-openssl req -new -x509 -keyout ca.key -out ca.crt -days 365 -nodes -subj "/CN=Kafka-CA"
+openssl req -new -nodes \
+   -x509 \
+   -days 365 \
+   -newkey rsa:2048 \
+   -keyout ./ca.key \
+   -out ./ca.crt \
+   -config ./ca.cnf
 
+cat ./ca.crt ./ca.key > ./ca.pem
 
-# Generating keystore
-keytool -genkey -alias kafka-broker \
-  -keyalg RSA -keystore kafka.keystore.jks \
-  -keysize 2048 -validity 365 \
-  -dname "CN=kafka.example.com" \
-  -storepass $STOREPASS -keypass $KEYPASS
+openssl req -new \
+    -newkey rsa:2048 \
+    -keyout ./kafka-1.key \
+    -out ./kafka-1.csr \
+    -config ./broker.cnf \
+    -nodes
 
-# Creating certificate signing request
-keytool -certreq -alias kafka-broker \
-  -keystore kafka.keystore.jks \
-  -file kafka.csr -storepass $STOREPASS
+openssl x509 -req \
+    -days 3650 \
+    -in ./kafka-1.csr \
+    -CA ./ca.crt \
+    -CAkey ./ca.key \
+    -CAcreateserial \
+    -out ./kafka-1.crt \
+    -extfile ./broker.cnf \
+    -extensions v3_req
 
-# Signing
-openssl x509 -req -CA ca.crt -CAkey ca.key -in kafka.csr \
-  -out kafka-signed.crt -days 365 -CAcreateserial
+openssl pkcs12 -export \
+    -in ./kafka-1.crt \
+    -inkey ./kafka-1.key \
+    -chain \
+    -CAfile ./ca.pem \
+    -name kafka-1 \
+    -out ./kafka-1.p12 \
+    -password pass:confluent
 
-# importing CA certificate and signed key
-keytool -import -alias CARoot \
-  -keystore kafka.keystore.jks -file ca.crt \
-  -storepass $STOREPASS -noprompt
+keytool -importkeystore \
+    -deststorepass confluent \
+    -destkeystore ./kafka.kafka-1.keystore.pkcs12 \
+    -srckeystore ./kafka-1.p12 \
+    -deststoretype PKCS12  \
+    -srcstoretype PKCS12 \
+    -noprompt \
+    -srcstorepass confluent
 
-keytool -import -alias kafka-broker \
-  -keystore kafka.keystore.jks \
-  -file kafka-signed.crt -storepass $STOREPASS
-
-# Creating truststore
-keytool -import -alias CARoot \
-  -keystore kafka.truststore.jks -file ca.crt \
-  -storepass $STOREPASS -noprompt
-
+keytool -list -v \
+    -keystore ./kafka.kafka-1.keystore.pkcs12 \
+    -storepass confluent
 
