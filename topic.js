@@ -1,4 +1,5 @@
 const { Kafka } = require('kafkajs');
+const { fs } = require('fs');
 require('dotenv').config();
 
 topicCreator = async (topicName) => {
@@ -12,7 +13,10 @@ topicCreator = async (topicName) => {
         */
         const kafka = new Kafka({
             'clientId': 'topic_manager',
-            'brokers': [process.env.KAFKA_BROKER]
+            'brokers': [process.env.KAFKA_BROKER],
+            'ssl': {
+
+            }
         });
 
 
@@ -56,7 +60,11 @@ topicCreator = async (topicName) => {
 topicRemover = async (topicName) => {
     const kafka = new Kafka({
         'clientId': 'topic_manager',
-        'brokers': [process.env.KAFKA_BROKER]
+        'brokers': [process.env.KAFKA_BROKER],
+        'ssl': {
+            ca: [fs.readFileSync('./ca-cert')],
+            rejectUnauthorized: true
+        }
     });
 
 
@@ -87,3 +95,5 @@ topicRemover = async (topicName) => {
 // main();
 
 module.exports = { topicCreator, topicRemover }
+
+topicCreator('Users')
