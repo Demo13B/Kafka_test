@@ -27,5 +27,6 @@ services:
       KAFKA_SSL_TRUSTSTORE_PASSWORD: 'serverpassword'
       # KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: ''
       KAFKA_SECURITY_INTER_BROKER_PROTOCOL: 'SSL'
+      KAFKA_HEAP_OPTS: "-Xmx512M -Xms256M"
     volumes:
       - ./creds:/certs
