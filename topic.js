@@ -60,11 +60,7 @@ topicCreator = async (topicName) => {
 topicRemover = async (topicName) => {
     const kafka = new Kafka({
         'clientId': 'topic_manager',
-        'brokers': [process.env.KAFKA_BROKER],
-        'ssl': {
-            ca: [fs.readFileSync('./ca-cert')],
-            rejectUnauthorized: true
-        }
+        'brokers': [process.env.KAFKA_BROKER]
     });
 
 
