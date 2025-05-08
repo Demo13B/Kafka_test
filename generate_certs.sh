@@ -10,40 +10,40 @@ cat ./ca.crt ./ca.key > ./ca.pem
 
 openssl req -new \
     -newkey rsa:2048 \
-    -keyout ./kafka-1.key \
-    -out ./kafka-1.csr \
+    -keyout ./broker.key \
+    -out ./broker.csr \
     -config ./broker.cnf \
     -nodes
 
 openssl x509 -req \
     -days 3650 \
-    -in ./kafka-1.csr \
+    -in ./broker.csr \
     -CA ./ca.crt \
     -CAkey ./ca.key \
     -CAcreateserial \
-    -out ./kafka-1.crt \
+    -out ./broker.crt \
     -extfile ./broker.cnf \
     -extensions v3_req
 
 openssl pkcs12 -export \
-    -in ./kafka-1.crt \
-    -inkey ./kafka-1.key \
+    -in ./broker.crt \
+    -inkey ./broker.key \
     -chain \
     -CAfile ./ca.pem \
-    -name kafka-1 \
-    -out ./kafka-1.p12 \
-    -password pass:confluent
+    -name broker \
+    -out ./broker.p12 \
+    -password pass:<password>
 
 keytool -importkeystore \
-    -deststorepass confluent \
-    -destkeystore ./kafka.kafka-1.keystore.pkcs12 \
-    -srckeystore ./kafka-1.p12 \
+    -deststorepass <password> \
+    -destkeystore ./kafka.broker.keystore.pkcs12 \
+    -srckeystore ./broker.p12 \
     -deststoretype PKCS12  \
     -srcstoretype PKCS12 \
     -noprompt \
-    -srcstorepass confluent
+    -srcstorepass <password>
 
 keytool -list -v \
-    -keystore ./kafka.kafka-1.keystore.pkcs12 \
-    -storepass confluent
+    -keystore ./kafka.broker.keystore.pkcs12 \
+    -storepass <password>
 

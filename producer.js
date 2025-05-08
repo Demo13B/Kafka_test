@@ -7,12 +7,10 @@ sendMessage = async (topicName, message) => {
         // Начало как в topic
         const kafka = new Kafka({
             'clientId': 'topic_manager',
-            'brokers': [process.env.KAFKA_BROKER],
+            'brokers': ['demo13b.ddnsfree.com:19093'],
             'ssl': {
                 'ca': [fs.readFileSync('./creds/ca.crt')],
-                'rejectUnauthorized': true,
-                'checkServerIdentity': () => undefined,
-                'passphrase': 'confluent'
+                'rejectUnauthorized': true
             }
         });
         const producer = kafka.producer();
