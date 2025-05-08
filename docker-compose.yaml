@@ -24,10 +24,10 @@ services:
       KAFKA_SSL_KEYSTORE_FILENAME: kafka.broker.keystore.pkcs12
       KAFKA_SSL_KEYSTORE_CREDENTIALS: broker_creds
       KAFKA_SSL_KEY_CREDENTIALS: broker_creds
-      #KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.kafka-1.truststore.pkcs12
-      #KAFKA_SSL_TRUSTSTORE_CREDENTIALS: kafka-1_truststore_creds
+      KAFKA_SSL_TRUSTSTORE_FILENAME: kafka.broker.truststore.pkcs12
+      KAFKA_SSL_TRUSTSTORE_CREDENTIALS: broker_creds
       KAFKA_SSL_ENDPOINT_IDENTIFICATION_ALGORITHM: "HTTPS"
-      #KAFKA_SSL_CLIENT_AUTH: "required"
+      KAFKA_SSL_CLIENT_AUTH: "required"
       KAFKA_HEAP_OPTS: "-Xmx512M -Xms256M"
 
     ports:

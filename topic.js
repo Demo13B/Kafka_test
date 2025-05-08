@@ -16,7 +16,9 @@ topicCreator = async (topicName) => {
             'brokers': ['demo13b.ddnsfree.com:19093'],
             'ssl': {
                 'ca': [fs.readFileSync('./creds/ca.crt')],
-                'rejectUnauthorized': true
+                'rejectUnauthorized': true,
+                'cert': fs.readFileSync('./creds/client.crt'),
+                'key': fs.readFileSync('./creds/client.key')
             }
         });
 
@@ -61,12 +63,12 @@ topicCreator = async (topicName) => {
 topicRemover = async (topicName) => {
     const kafka = new Kafka({
         'clientId': 'topic_manager',
-        'brokers': [process.env.KAFKA_BROKER],
+        'brokers': ['demo13b.ddnsfree.com:19093'],
         'ssl': {
             'ca': [fs.readFileSync('./creds/ca.crt')],
             'rejectUnauthorized': true,
-            'checkServerIdentity': () => undefined,
-            'passphrase': 'confluent'
+            'cert': fs.readFileSync('./creds/client.crt'),
+            'key': fs.readFileSync('./creds/client.key')
         }
     });
 

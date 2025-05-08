@@ -10,7 +10,9 @@ sendMessage = async (topicName, message) => {
             'brokers': ['demo13b.ddnsfree.com:19093'],
             'ssl': {
                 'ca': [fs.readFileSync('./creds/ca.crt')],
-                'rejectUnauthorized': true
+                'rejectUnauthorized': true,
+                'cert': fs.readFileSync('./creds/client.crt'),
+                'key': fs.readFileSync('./creds/client.key')
             }
         });
         const producer = kafka.producer();
